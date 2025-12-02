@@ -1,0 +1,111 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+venv/
+ENV/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-workspace
+*.sublime-project
+*.DS_Store
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Local config
+.env
+.env.local
+.env.*.local
+
+# Cache and logs
+cache/
+logs/
+output/
+*.tmp
+*.temp
+*.log
+
+# Data (large files)
+Data/
+offline_packages/
+
+# Tests
+.pytest_cache/
+.coverage
+.tox/
+htmlcov/
+
+# Backups
+*.backup
+*.bak
+old/
+backup/
+
+# Excel files (can be large)
+*.xlsx
+*.xls
+!requirements.txt
+!.gitignore
+!.github/
+
+# IDE Python stuff
+.pytype/
+.dmypy.json
+dmypy.json
+
+# Pyre
+.pyre/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Documentation and temporary files (development notes)
+*.md
+CACHE_*.txt
+CHANGES_APPLIED.txt
+EXEC_SUMMARY.txt
+TTL_*.txt
+DEPLOYMENT_*.txt
+GITHUB_*.txt
+
+# Scripts and config
+flask run script
+waitress_config.bat
+
+# Node/misc
+.claude/
