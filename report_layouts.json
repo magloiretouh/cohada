@@ -1,0 +1,29 @@
+{
+  "layouts": {
+    "default": {
+      "name": "Layout avec IFRS",
+      "description": "Layout standard avec toutes les colonnes SYSCOHADA et IFRS",
+      "excluded_columns": [],
+      "column_labels": {}
+    },
+    "CIV_LAYOUT": {
+      "name": "Layout sans IFRS",
+      "description": "Layout simplifié sans colonnes IFRS et informations de saisie",
+      "excluded_columns": [
+        "Compte IFRS",
+        "Desc Compte IFRS",
+        "Date de Saisie",
+        "Heure de Saisie",
+        "Utilisateur SAP",
+        "Contrepartie IFRS",
+        "Contrepartie IFRS Desc"
+      ],
+      "column_labels": {
+        "Compte SYSCOHADA": "Compte Général",
+        "Compte SYSCOHADA Desc": "Libelle du Compte",
+        "Contrepartie SYSCOHADA": "Contrepartie",
+        "Contrepartie SYSCOHADA Desc": "Libelle Contrepartie"
+      }
+    }
+  }
+}

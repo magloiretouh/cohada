@@ -1,8 +1,11 @@
 from flask import send_from_directory
 import polars as pl
 import config
+import logging
 from datetime import datetime
 import glob
+
+logger = logging.getLogger(__name__)
 
 # Load the dataset with filtering on a company code column value
 def load_data(folder_path: str, filter_column: str, filter_value, columns: list, amount_column: str, start_date, end_date,
@@ -56,22 +59,22 @@ def load_data(folder_path: str, filter_column: str, filter_value, columns: list,
                 actual_dtype = df_file.schema.get(col)
                 # compare by name where possible
                 if actual_dtype != expected_dtype:
-                    print(f"Schema mismatch in file {f} for column {col}: expected {expected_dtype}, got {actual_dtype}")
+                    logger.warning(f"Schema mismatch in file {f} for column {col}: expected {expected_dtype}, got {actual_dtype}")
                     file_had_mismatch = True
                     try:
                         # try reasonable casts
                         if expected_dtype == pl.Date:
                             df_file = df_file.with_columns(pl.col(col).str.strptime(pl.Date, "%d/%m/%Y").alias(col))
-                            print(f"  - coerced column {col} to Date")
+                            logger.info(f"  - coerced column {col} to Date")
                         elif expected_dtype == pl.Time:
                             df_file = df_file.with_columns(pl.col(col).str.strptime(pl.Time, "%H:%M:%S").alias(col))
-                            print(f"  - coerced column {col} to Time")
+                            logger.info(f"  - coerced column {col} to Time")
                         else:
                             df_file = df_file.with_columns(pl.col(col).cast(expected_dtype).alias(col))
-                            print(f"  - coerced column {col} to {expected_dtype}")
+                            logger.info(f"  - coerced column {col} to {expected_dtype}")
                     except Exception:
                         # cast failed; leave the column as-is but mark mismatch
-                        print(f"  - failed to coerce column {col}")
+                        logger.warning(f"  - failed to coerce column {col}")
                         pass
 
         if file_had_mismatch:
@@ -81,9 +84,9 @@ def load_data(folder_path: str, filter_column: str, filter_value, columns: list,
 
     # report mismatched files (non-blocking)
     if mismatched_files:
-        print("Files with schema mismatches (attempted coercion, continuing):")
+        logger.warning("Files with schema mismatches (attempted coercion, continuing):")
         for mf in mismatched_files:
-            print(" -", mf)
+            logger.warning(f" - {mf}")
 
     # concatenate
     df_polars = pl.concat(df_list) if df_list else pl.DataFrame()

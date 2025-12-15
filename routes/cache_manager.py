@@ -1,10 +1,13 @@
 import os
 import json
 import hashlib
+import logging
 from datetime import datetime
 from typing import Optional, Dict, List
 import config
 import glob
+
+logger = logging.getLogger(__name__)
 
 class CacheManager:
     """
@@ -42,7 +45,7 @@ class CacheManager:
             size = stat.st_size
             return f"{timestamp}_{size}"
         except Exception as e:
-            print(f"Erreur lors du calcul de signature pour {file_path}: {e}")
+            logger.error(f"Erreur lors du calcul de signature pour {file_path}: {e}")
             return ""
 
     def _get_files_for_report(self, report_type: str, company_code: str, year: str,

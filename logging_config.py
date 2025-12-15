@@ -26,7 +26,6 @@ def setup_logging():
     # Log file paths
     app_log_file = os.path.join(log_dir, "app.log")
     error_log_file = os.path.join(log_dir, "error.log")
-    cache_log_file = os.path.join(log_dir, "cache.log")
 
     # Format
     formatter = logging.Formatter(
@@ -54,17 +53,6 @@ def setup_logging():
     error_handler.setFormatter(formatter)
     logger.addHandler(error_handler)
 
-    # ===== CACHE LOGS =====
-    cache_handler = logging.handlers.RotatingFileHandler(
-        cache_log_file,
-        maxBytes=5*1024*1024,  # 5 MB
-        backupCount=3  # Keep 3 backups
-    )
-    cache_handler.setLevel(logging.INFO)
-    cache_handler.setFormatter(formatter)
-    cache_logger = logging.getLogger('cache')
-    cache_logger.addHandler(cache_handler)
-
     # ===== CONSOLE LOGS =====
     console_handler = logging.StreamHandler()
     console_handler.setLevel(logging.INFO)
@@ -78,7 +66,6 @@ def setup_logging():
     logger.info(f"Log Directory: {os.path.abspath(log_dir)}")
     logger.info(f"App Log: {os.path.abspath(app_log_file)}")
     logger.info(f"Error Log: {os.path.abspath(error_log_file)}")
-    logger.info(f"Cache Log: {os.path.abspath(cache_log_file)}")
     logger.info("=" * 70)
 
     return logger

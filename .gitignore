@@ -5,6 +5,7 @@ __pycache__/
 *.so
 .Python
 build/
+docs/
 develop-eggs/
 dist/
 downloads/
@@ -109,3 +110,4 @@ waitress_config.bat
 
 # Node/misc
 .claude/
+.gitignore

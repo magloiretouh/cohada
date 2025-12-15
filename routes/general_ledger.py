@@ -2,11 +2,14 @@ from flask import Blueprint, Response, request, send_from_directory, jsonify
 from datetime import datetime
 import config
 import os
+import logging
 from routes.grand_livre import generate_gl_compta_gen
 from routes.general_balance import generate_bal_gen
 from routes.grand_livre_bp import generate_gl_bp
 from routes.general_balance_bp import generate_bal_bp
 from routes.cache_manager import CacheManager
+
+logger = logging.getLogger(__name__)
 
 general_ledger = Blueprint("general_ledger", __name__)
 
@@ -71,19 +74,24 @@ def _get_or_generate_report(data, generate_func, report_type, company_code, year
     """
     start_month = int(data.get('start_month', 1))
     end_month = int(data.get('end_month', 12))
+    layout_type = data.get('layout_type', None)  # Get user-selected layout
 
-    # Créer la clé de cache
-    cache_key = cache_manager.get_cache_key(report_type, company_code, year, start_month, end_month, bp_type, bnk)
+    # Log what layout_type was received
+    logger.info(f"Received layout_type from frontend: {layout_type}")
+
+    # Créer la clé de cache (include layout_type for Grand Livre Compta Gen)
+    cache_key_suffix = f"_{layout_type}" if layout_type and report_type == config.GRAND_LIVRE_COMPTA_GEN else ""
+    cache_key = cache_manager.get_cache_key(report_type, company_code, year, start_month, end_month, bp_type, bnk) + cache_key_suffix
 
     # Vérifier si le rapport est en cache
     cached_file = cache_manager.get_cache(cache_key)
     if cached_file:
-        print(f"✓ Cache hit pour {cache_key}")
+        logger.info(f"Cache hit pour {cache_key}")
         cache_manager.access_cache(cache_key)
         return send_from_directory(directory=os.getcwd(), path=cached_file, as_attachment=True), 200
 
     # Générer le rapport avec les paramètres de cache
-    print(f"✗ Cache miss pour {cache_key} - génération en cours...")
+    logger.info(f"Cache miss pour {cache_key} - génération en cours...")
 
     # Déterminer la fonction correcte avec le bon nombre de paramètres
     if bp_type:
@@ -91,10 +99,14 @@ def _get_or_generate_report(data, generate_func, report_type, company_code, year
         result = generate_func(data, bp_type=bp_type, cache_manager=cache_manager, cache_key=cache_key)
     elif bnk:
         # Pour les rapports bancaires
-        result = generate_func(data, bnk=bnk, cache_manager=cache_manager, cache_key=cache_key)
+        result = generate_func(data, bnk=bnk, cache_manager=cache_manager, cache_key=cache_key, layout_type=layout_type)
     else:
         # Pour generate_gl_compta_gen et generate_bal_gen
-        result = generate_func(data, cache_manager=cache_manager, cache_key=cache_key)
+        if report_type == config.GRAND_LIVRE_COMPTA_GEN:
+            # Pass layout_type for Grand Livre Compta Gen
+            result = generate_func(data, cache_manager=cache_manager, cache_key=cache_key, layout_type=layout_type)
+        else:
+            result = generate_func(data, cache_manager=cache_manager, cache_key=cache_key)
 
     return result
 
